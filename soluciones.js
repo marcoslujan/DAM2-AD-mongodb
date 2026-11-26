@@ -2,8 +2,8 @@
 // DAM2 - ACCESO A DATOS
 // PRÁCTICA MONGODB - TIENDA ONLINE
 // ============================================================
-// Nombre:
-// Fecha:
+// Nombre:Marcos Luján Miguel
+// Fecha:26/11/2026
 //
 // Escribe debajo de cada enunciado la consulta correspondiente.
 // Utiliza la chuleta de MongoDB como referencia.
@@ -13,33 +13,50 @@
 // ============================================================
 
 // 1. Muestra todas las bases de datos disponibles.
-
+show dbs
 // 2. Selecciona la base de datos `tienda`.
-
+use tienda
 // 3. Lista todas sus colecciones.
-
+show collections
 // 4. Averigua cuántos documentos tiene cada colección.
-
+db.productos.countDocuments()
 // 5. Muestra todos los productos registrados.
-
+db.productos.find()
 // 6. Obtén un único producto.
-
+db.productos.findOne()
 // 7. Descubre qué categorías de productos existen.
+db.productos.distinct("categoria")
+// 8. Muestra únicamente el nombre y el precio de todos los productos, sin mostrar su _id.
 
-// 8. Muestra únicamente el nombre y el precio de todos los
-// productos, sin mostrar su _id.
-
+db.productos.find(
+    {},
+    { _id: 0, nombre: 1, precio: 1 }
+)
 // BLOQUE 2. CONSULTAS Y FILTROS
 // ============================================================
 
 // 9. Busca todos los productos de informática.
-
+db.productos.aggregate([
+    {
+        $lookup: {
+            from: 'categorias',
+            localField: 'categoriaId',
+            foreignField: '_id',
+            as: 'categoria'
+        }
+    },
+    {
+        $match: {
+            'categoria.nombre': 'Informática'
+        }
+    }
+])
 // 10. Encuentra los productos cuyo precio sea superior a 100 €.
-
-// 11. Busca los productos que cuestan entre 50 € y 500 €,
-// ambos incluidos.
-
+db.productos.find({ precio: { $gt: 100 } });
+// 11. Busca los productos que cuestan entre 50 € y 500 €, ambos incluidos.
+db.productos.find({ precio: { $gte: 50, $lte: 500 } });
 // 12. Localiza los productos que no tienen stock.
+db.productos.find({ stock: 0 });
 
 // 13. Encuentra los productos con stock superior a 10 unidades
 // y precio inferior a 100 €.
